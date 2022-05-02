@@ -1,5 +1,4 @@
-# Python code to illustrate Sending mail with attachments
-# from your Gmail account
+
 
 # libraries to be imported
 import smtplib
@@ -10,23 +9,11 @@ from email import encoders
 
 fromaddr = "email"
 toaddr = "email"
-
-# instance of MIMEMultipart
 msg = MIMEMultipart()
-
-# storing the senders email address
 msg['From'] = fromaddr
-
-# storing the receivers email address
 msg['To'] = toaddr
-
-# storing the subject
 msg['Subject'] = "Web scrapping - ANNONCE.CZ BYTY"
-
-# string to store the body of the mail
 body = "Tabulka prodávaných bytů v ČŘ"
-
-# attach the body with the msg instance
 msg.attach(MIMEText(body, 'plain'))
 
 # open the file to be sent
@@ -34,33 +21,18 @@ filename = "annonce_byty.xlsx"
 attachment = open("annonce_byty.xlsx", "rb")
 
 # instance of MIMEBase and named as p
-p = MIMEBase('application', 'octet-stream')
-
-# To change the payload into encoded form
-p.set_payload((attachment).read())
+file = MIMEBase('application', 'octet-stream')
+file.set_payload((attachment).read())
 
 # encode into base64
-encoders.encode_base64(p)
-
-p.add_header('Content-Disposition', "attachment; filename= %s" % filename)
-
-# attach the instance 'p' to instance 'msg'
-msg.attach(p)
+encoders.encode_base64(file)
+file.add_header('Content-Disposition', "attachment; filename= %s" % filename)
+msg.attach(file)
 
 # creates SMTP session
-s = smtplib.SMTP('smtp.gmail.com', 587)
-
-# start TLS for security
-s.starttls()
-
-# Authentication
-s.login(fromaddr, "password")
-
-# Converts the Multipart msg into a string
+smt_gmail = smtplib.SMTP('smtp.gmail.com', 587)
+smt_gmail.starttls()
+smt_gmail.login(fromaddr, "password")
 text = msg.as_string()
-
-# sending the mail
-s.sendmail(fromaddr, toaddr, text)
-
-# terminating the session
-s.quit()
+smt_gmail.sendmail(fromaddr, toaddr, text)
+smt_gmail.quit()
